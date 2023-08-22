@@ -1,40 +1,54 @@
-
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
+import path from  'path';
+import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 
-import { FingerprintJsServerApiClient, Region } from '@fingerprintjs/fingerprintjs-pro-server-api';
+import {
+    FingerprintJsServerApiClient,
+    Region,
+  } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
-const app = express()
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-app.use(express.static(__dirname, { extensions: ['html', 'htm']}));
+  const app = express()
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  dotenv.config();
+
+  app.use(cors())
+  app.use(express.static(path.join(__dirname, 'public'))); // To Share CSS, Images file
+  app.use(bodyParser.json()); // Bodyparser to grab the values from the form along with the visitor ID
+  app.use(bodyParser.urlencoded({ extended: true }))
+
+  const API_Key = process.env.FINGERPRINT_PRIVATE_KEY
 
   const client = new FingerprintJsServerApiClient({
+    apiKey: API_Key,
     region: Region.EU,
-    apiKey: "lwN7mXK3Nadb1HPDgNQk",
-    fetch: fetch.bind(globalThis),
-  });
+  })
+
   
-
-  app.listen(3000, ()=>{
-    console.log("Server running on port 3000");
+  app.listen(3000, (req, res)=> {
+    console.log("Server running on PORT 3000 \n");
   })
 
-  app.use(express.static(__dirname))
+  // GET method
+  app.get("/", (req,res)=>{
+    res.sendFile(path.join(__dirname, "/index.html"))
+  })
 
-  app.get("/", (req, res)=>{
-    client.getVisitorHistory("<visitorId>")
-    .then(visitorHistory => {
-      console.log(visitorHistory);
+  // POST method
+  app.post("/",(req, res)=>{
+
+    console.log(req.body.visitorID);
+    var visitorID = req.body.visitorID;
+
+    // Get visit history of a specific visitor
+    client.getVisitorHistory(visitorID).then((visitorHistory) => {
+      console.log(visitorHistory)
     })
-    .catch(error => {
-      if (error.status === 403) {
-        console.log(error.error);
-      } else if (error.status === 429) {
-        retryLater(error.retryAfter); // this function needs to be implemented on your side 
-      }
-    });
-    res.sendFile(__dirname + "/index.html");
+
   })
+

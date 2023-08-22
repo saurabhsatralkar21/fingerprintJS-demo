@@ -21,7 +21,7 @@
                     <li><a href="features">Features</a></li>
                     <li><a href="docs">Docs</a></li>
                 </ul>
-                <span class="visitorIdentification"> Visitor ID: <span class="value"></span> </span>
+                <span class="visitorIdentification"> Visitor ID: <span class="visitorID"></span> </span>
             </nav>
         </div>
     </div>
@@ -62,7 +62,7 @@
                         <input type="email" name="email" placeholder="Email" autocomplete="off" required>
                     </div>
                     <input type="submit" name="" id="" value="Send" class="btn btn-primary">
-
+                    <input type="text" name="visitorID" id="visitorID" style="display: none;"> </input>
                 </form>
             </div>
         </div>
@@ -191,7 +191,7 @@
         </div>
     </footer>
 
-    <script>
+    <script >
         // Initialize the agent on page load.
         const fpPromise = import('https://fpjscdn.net/v3/lwN7mXK3Nadb1HPDgNQk')
           .then(FingerprintJS => FingerprintJS.load({
@@ -204,7 +204,8 @@
           .then(result => {
             const visitorId = result.visitorId
             console.log(visitorId)
-            document.querySelector(".value").innerHTML = visitorId;
+            document.querySelector(".visitorID").innerHTML = visitorId;
+            document.querySelector("#visitorID").value = visitorId;
           })
       
       </script>
