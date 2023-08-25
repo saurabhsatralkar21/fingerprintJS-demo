@@ -45,6 +45,8 @@ import {
     console.log(req.body.visitorID);
     var visitorID = req.body.visitorID;
 
+    // Maintain your own DB
+
     // Get visit history of a specific visitor
     client.getVisitorHistory(visitorID).then((visitorHistory) => {
       console.log(visitorHistory)
